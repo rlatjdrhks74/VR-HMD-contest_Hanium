@@ -11,11 +11,10 @@ public class HideController : MonoBehaviour
 
     Vector2 MoveControllerState;    //컨트롤러 상태값
     Vector2 RotateControllerState;
-    float TriggerControllerState;
 
     public GameObject MoveController;       //이동 회전 트리거 충전기 UI
     public GameObject RotateController;
-    public GameObject TriggerController;
+    public GameObject DownButtonTrigger;
     public GameObject Charge;
 
     AudioSource Audioplayer;
@@ -24,13 +23,12 @@ public class HideController : MonoBehaviour
     bool limit1 = true;     //UI 숨김 및 보이기 체크에 사용될 변수
     bool limit2 = false;
     bool limit3 = false;
-    bool limit4 = false;
     float TickTime;
     // Update is called once per frame
     void Start()
     {
         RotateController.SetActive(false);
-        TriggerController.SetActive(false);
+        DownButtonTrigger.SetActive(false);
         Charge.SetActive(false);
         Audioplayer = GetComponent<AudioSource>();
     }
@@ -68,12 +66,10 @@ public class HideController : MonoBehaviour
 
     void OnTriggerEnter(Collider col)       //엘리베이터 입구 및 충전기 앞에 가면 그에 맞는 UI출력
     {
-        //TriggerControllerState = OVRInput.Get(OVRInput.Axis1D.SecondaryIndexTrigger);
-        if (col.gameObject.tag == "Entrance" && limit3 == false && limit4 == false)
+        if (col.gameObject.tag == "Entrance" && limit3 == false)
         {
-            TriggerController.SetActive(true);
+            DownButtonTrigger.SetActive(true);
             limit3 = true;
-            limit4 = true;
         }
         if (col.gameObject.name == "ChargerEntrance")
         {
@@ -81,29 +77,16 @@ public class HideController : MonoBehaviour
         }
     }
 
-    void HideTriggerController()
-    {
-        if (TriggerControllerState >= 0.5 && limit4 == true)
-        {
-            limit4 = false;
-            Audioplayer.PlayOneShot(CorrectSound);
-            TriggerController.SetActive(false);
-        }
-    }
-
     void Update()       //컨트롤러 상태값을 계속 체크할 수 있게 Update에서 체크 -> UI 숨김 및 보이기 판단ㄴ 
     {
         MoveControllerState = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);
         RotateControllerState = OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick);
-        TriggerControllerState = OVRInput.Get(OVRInput.Axis1D.SecondaryIndexTrigger);
         if (limit1 == true)
             HideMoveController();
         if ((limit1 == false) && (limit2 == false))
             TickTime += Time.deltaTime;
         if((TickTime >= 2.0f) && (limit1 == false) && (limit2 == false))
             ShowRotateController();
-        if (limit3 == true)
-            HideTriggerController();
     }
 
 }
